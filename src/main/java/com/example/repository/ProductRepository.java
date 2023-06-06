@@ -1,6 +1,6 @@
 package com.example.repository;
 
-import com.example.entity.Product;
+import com.example.model.Product;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 @Repository
 public class ProductRepository {
+
     public static final String HASH_KEY = "products";
     private static final long EXPIRATION_TIMEOUT = 5;
 
@@ -18,18 +19,18 @@ public class ProductRepository {
         this.redisTemplate = redisTemplate;
     }
 
-    public Product save(Product product) {
+    public Product saveProduct(Product product) {
         redisTemplate.opsForHash().put(HASH_KEY, product.getId(), product);
         redisTemplate.expire(HASH_KEY, EXPIRATION_TIMEOUT, TimeUnit.SECONDS);
 
         return product;
     }
 
-    public List<Product> findAll() {
+    public List<Product> getAllProducts() {
         return redisTemplate.opsForHash().values(HASH_KEY);
     }
 
-    public Product findProductById(int id) {
+    public Product getProductById(int id) {
         return (Product) redisTemplate.opsForHash().get(HASH_KEY, id);
     }
 

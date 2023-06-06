@@ -1,9 +1,7 @@
 package com.example.controller;
 
-import com.example.entity.Product;
-import com.example.repository.ProductRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.model.Product;
+import com.example.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,29 +10,29 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController {
 
-    private ProductRepository productRepository;
+   private ProductService productService;
 
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
     @PostMapping
-    public Product save(@RequestBody Product product) {
-        return productRepository.save(product);
+    public Product saveProduct(@RequestBody Product product) {
+        return productService.save(product);
     }
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return productRepository.findAll();
+        return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
     public Product findProduct(@PathVariable int id) {
-        return productRepository.findProductById(id);
+        return productService.findProductById(id);
     }
 
     @DeleteMapping("/{id}")
     public String remove(@PathVariable int id) {
-        return productRepository.deleteProduct(id);
+        return productService.deleteProduct(id);
     }
 }
