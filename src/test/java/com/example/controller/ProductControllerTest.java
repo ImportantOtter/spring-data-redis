@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.model.Product;
 import com.example.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -33,23 +34,29 @@ public class ProductControllerTest {
     @InjectMocks
     private ProductController productController;
 
+    private ObjectMapper objectMapper;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
+        this.objectMapper = new ObjectMapper();
     }
 
     @Test
     public void saveProduct() throws Exception {
         Product product = new Product(1, "Phone", 1, 1000L);
+        String endpoint = "/product";
 
         when(productService.save(any(Product.class))).thenReturn(product);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/product")
+        String requestJson = objectMapper.writeValueAsString(product);
+
+        mockMvc.perform(MockMvcRequestBuilders.post(endpoint)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\": 1, \"name\": \"Phone\", \"qty\": 1, \"price\": 1000}"))
+                        .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"id\": 1, \"name\": \"Phone\", \"qty\": 1, \"price\": 1000}"))
+                .andExpect(content().json(requestJson))
                 .andDo(print());
 
         verify(productService, times(1)).save(any(Product.class));
@@ -59,10 +66,11 @@ public class ProductControllerTest {
     public void removeTest() throws Exception {
         Product product = new Product(1, "Phone", 1, 1000L);
         String productDeleted = "Product deleted";
+        String endpoint = "/product/1";
 
         when(productService.deleteProduct(product.getId())).thenReturn(productDeleted);
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/product/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete(endpoint))
                 .andExpect(status().isOk())
                 .andExpect(content().string(productDeleted))
                 .andDo(print());
@@ -72,6 +80,7 @@ public class ProductControllerTest {
 
     @Test
     public void getAllProducts() throws Exception {
+        String endpoint = "/product";
         List<Product> products = Arrays.asList(
                 new Product(1, "Phone", 1, 1000L),
                 new Product(2, "Book", 1, 30L)
@@ -79,12 +88,11 @@ public class ProductControllerTest {
 
         when(productService.getAllProducts()).thenReturn(products);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/product"))
+        String expectedJson = objectMapper.writeValueAsString(products);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[" +
-                        "{\"id\": 1, \"name\": \"Phone\", \"qty\": 1, \"price\": 1000}," +
-                        "{\"id\": 2, \"name\": \"Book\", \"qty\": 1, \"price\": 30}" +
-                        "]"))
+                .andExpect(content().json(expectedJson))
                 .andDo(print());
 
         verify(productService, times(1)).getAllProducts();
@@ -92,13 +100,16 @@ public class ProductControllerTest {
 
     @Test
     public void findProduct() throws Exception {
+        String endpoint = "/product/1";
         Product product = new Product(1, "Phone", 1, 1000L);
 
         when(productService.findProductById(1)).thenReturn(product);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/product/1"))
+        String requestJson = objectMapper.writeValueAsString(product);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(endpoint))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"id\": 1, \"name\": \"Phone\", \"qty\": 1, \"price\": 1000}"))
+                .andExpect(content().json(requestJson))
                 .andDo(print());
 
         verify(productService, times(1)).findProductById(1);
