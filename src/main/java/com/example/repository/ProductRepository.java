@@ -1,6 +1,6 @@
 package com.example.repository;
 
-import com.example.config.RedisExpirationListener;
+import com.example.config.redis.RedisExpirationListener;
 import com.example.model.Product;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;

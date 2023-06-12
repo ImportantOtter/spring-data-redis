@@ -1,6 +1,6 @@
 package com.example;
 
-import com.example.config.RedisConfig;
+import com.example.config.redis.RedisConfig;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication

@@ -1,4 +1,4 @@
-package com.example.config;
+package com.example.config.redis;
 
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.JedisPubSub;
